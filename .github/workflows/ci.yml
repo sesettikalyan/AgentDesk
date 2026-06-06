@@ -7,37 +7,56 @@ on:
 
 jobs:
   backend-lint:
+    name: Backend Linting
 
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
-      - name: Install flake8
+      - name: Install Python Dependencies
         run: |
+          python -m pip install --upgrade pip
+
+          if [ -f backend/requirements.txt ]; then
+            pip install -r backend/requirements.txt
+          fi
+
           pip install flake8
 
-      - name: Run Linter
+      - name: Run Flake8 Linter
         run: |
-          flake8 backend
+          if [ -d backend ]; then
+            flake8 backend --count --show-source --statistics
+          else
+            echo "backend directory not found"
+          fi
 
   frontend-check:
+    name: Frontend Dependency & Build Check
 
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-      - name: Setup Node
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: "20"
 
-      - name: Install Dependencies
+      - name: Install Frontend Dependencies
         working-directory: frontend
         run: npm install
+
+      - name: Build Frontend
+        working-directory: frontend
+        run: npm run build
+        
