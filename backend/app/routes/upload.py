@@ -15,7 +15,10 @@ def upload_pdf(file: UploadFile = File(...)):
 
     filename = Path(file.filename).name
     if not filename.lower().endswith(".pdf"):
-        raise HTTPException(status_code=400, detail="Only PDF files are supported")
+        raise HTTPException(
+            status_code=400,
+            detail="Only PDF files are supported",
+        )
 
     file_path = upload_dir / filename
 
