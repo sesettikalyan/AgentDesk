@@ -4,6 +4,7 @@ __pycache__/
 venv/
 .env
 uploads/
+chroma_db/
 
 # Node
 node_modules/
