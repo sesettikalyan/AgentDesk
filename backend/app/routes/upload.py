@@ -1,4 +1,4 @@
-from fastapi import APIRouter, UploadFile
+from fastapi import APIRouter, UploadFile, HTTPException
 import shutil
 
 from app.services.pdf_service import extract_pdf_info
@@ -14,7 +14,10 @@ async def upload_pdf(file: UploadFile):
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
-    pdf_info = extract_pdf_info(file_path)
+    try:
+        pdf_info = extract_pdf_info(file_path)
+    except ValueError as error:
+        raise HTTPException(status_code=400, detail=str(error))
 
     return {
     "filename": file.filename,
@@ -22,7 +25,9 @@ async def upload_pdf(file: UploadFile):
     "characters": pdf_info["characters"],
     "chunks": pdf_info["chunks"],
     "embedding_count": pdf_info["embedding_count"],
-    "embedding_dimension": pdf_info["embedding_dimension"]
+    "embedding_dimension": pdf_info["embedding_dimension"],
+    "stored_in_chromadb": pdf_info["stored_in_chromadb"]
+
 }                  
 
 
